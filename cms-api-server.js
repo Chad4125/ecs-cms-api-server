@@ -16,6 +16,12 @@ const renderJobConnection = mongoose.createConnection('mongodb://0.0.0.0:27017/r
   useUnifiedTopology: true,
 });
 
+// Use a separate connection for Image model
+const imageConnection = mongoose.createConnection('mongodb://0.0.0.0:27017/uploadedImageObj', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
 // Define MongoDB Schemas and Models
 const messageSchema = new mongoose.Schema({
   text: String,
@@ -27,11 +33,42 @@ const renderJobSchema = new mongoose.Schema({
   status: String,
 });
 
+const imageSchema = new mongoose.Schema({
+    version: String,
+    filename: String
+  });
+
 const Message = mongoose.model('Message', messageSchema);
 const RenderJob = renderJobConnection.model('RenderJob', renderJobSchema);
+const Image = imageConnection.model('Image', imageSchema);
 
-// Middleware to parse JSON
-app.use(bodyParser.json());
+// Increase the limit for the JSON parser (adjust the limit according to your needs)
+app.use(bodyParser.json({ limit: '10mb' }));
+
+// Increase the limit for the URL-encoded data parser (adjust the limit according to your needs)
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+
+
+
+app.post('/save-image', async (req, res) => {
+    try {
+      const version = req.body.version;
+      const filename = req.body.filename;
+  
+      // MongoDB에 이미지 정보 저장
+      const newImage = new Image({ version, filename });
+      await newImage.save();
+  
+      res.status(201).json({ message: 'Image information saved successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+  
+  
+
+
 
 // Endpoint to receive and save text messages
 app.post('/log', async (req, res) => {
