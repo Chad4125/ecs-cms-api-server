@@ -6,18 +6,18 @@ const app = express();
 const port = 12561;
 
 // MongoDB Connections
-mongoose.connect('mongodb://172.30.144.128:27017/messageLog', {
+mongoose.connect('mongodb://172.30.144.132:27017/messageLog', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
 
-const renderJobConnection = mongoose.createConnection('mongodb://172.30.144.128:27017/renderJobManager', {
+const renderJobConnection = mongoose.createConnection('mongodb://172.30.144.132:27017/renderJobManager', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 
 // Use a separate connection for Image model
-const imageConnection = mongoose.createConnection('mongodb://172.30.144.128:27017/uploadedImageObj', {
+const imageConnection = mongoose.createConnection('mongodb://172.30.144.132:27017/uploadedImageObj', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
